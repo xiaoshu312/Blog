@@ -1,0 +1,24 @@
+{
+  "name": "blog",
+  "type": "module",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "build": "npm run build:ssg",
+    "build:spa": "valaxy build",
+    "build:ssg": "valaxy build --ssg",
+    "dev": "valaxy",
+    "rss": "valaxy rss",
+    "serve": "vite preview"
+  },
+  "dependencies": {
+    "valaxy": "0.27.0",
+    "valaxy-theme-press": "^0.27.0",
+    "valaxy-theme-yun": "0.27.0",
+    "vitepress": "^1.6.4"
+  },
+  "devDependencies": {
+    "@iconify-json/fluent": "^1.2.39",
+    "typescript": "^5.9.3"
+  }
+}
