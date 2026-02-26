@@ -73,3 +73,4 @@
 ![一个有标题栏的窗口，标题栏上没有图标和标题，但是有系统按钮，下面的内容区域是一片黑色，窗口边框是白色的](/windows-pyqt5-frameless-window-show-system-buttons/code-3.png)
 
 这里有一些细节需要说明：
+
