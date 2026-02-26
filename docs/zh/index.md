@@ -3,26 +3,20 @@
 layout: home
 
 hero:
-  name: "Xiaoshu312's Blog"
-  text: "A VitePress Site"
-  tagline: My great project tagline
+  name: "小树的小窝"
+  text: "一个普通的博客"
+  tagline: 想成为一个有趣的人。
+  image:
+    src: /my_icon.jpg
+    alt: My Icon
   actions:
     - theme: brand
-      text: Markdown Examples
-      link: /markdown-examples
+      text: GitHub (Projects)
+      link: https://github.com/XiaoshuDeXiaowo
     - theme: alt
-      text: API Examples
-      link: /api-examples
-
-features:
-  - title: Feature A
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
-  - title: Feature B
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
-  - title: Feature C
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+      text: GitHub (Other)
+      link: https://github.com/xiaoshu312
 ---
-<a href='..'>
-<CardWidget title='Title' date='2026/2/25'>
-**Bold**
-</CardWidget></a>
+<CardWidget title='[Windows] 在 PyQt5 的无边框窗口中显示系统按钮' subtitle='2026/2/26' href='./windows-pyqt5-frameless-window-show-system-buttons'>
+Walking In Progress...
+</CardWidget>

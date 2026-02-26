@@ -3,23 +3,18 @@
 layout: home
 
 hero:
-  name: "Xiaoshu312's Blog"
-  text: "A VitePress Site"
-  tagline: My great project tagline
+  name: "Xiaoshu312's Home"
+  text: "A Normal Blog"
+  tagline: Want to be an interesting person.
+  image:
+    src: /my_icon.jpg
+    alt: My Icon
   actions:
     - theme: brand
-      text: Markdown Examples
-      link: /markdown-examples
+      text: GitHub (Projects)
+      link: https://github.com/XiaoshuDeXiaowo
     - theme: alt
-      text: API Examples
-      link: /api-examples
-
-features:
-  - title: Feature A
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
-  - title: Feature B
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
-  - title: Feature C
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+      text: GitHub (Other)
+      link: https://github.com/xiaoshu312
 ---
 

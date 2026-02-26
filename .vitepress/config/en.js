@@ -1,21 +1,27 @@
 const enThemeConfig = {
     // https://vitepress.dev/reference/default-theme-config
-    logo: '/logo.png',
+    logo: '/my_icon.jpg',
 
     i18nRouting: true,
+
+    siteTitle: 'Xiaoshu312\'s Home',
+
+    search: {
+      provider: 'local',
+    },
 
     nav: [
         { text: 'Home', link: '/' },
     ],
 
-    sidebar: [
-        {
-            text: '',
-            items: [
-                // { text: 'Text', link: '/link-to-page' },
-            ]
-        }
-    ],
+    // sidebar: [
+    //     {
+    //         text: '',
+    //         items: [
+    //             { text: 'Text', link: '/link-to-page' },
+    //         ]
+    //     }
+    // ],
 
     socialLinks: [
         { icon: 'github', link: 'https://github.com/xiaoshu312/Blog' },
@@ -34,7 +40,9 @@ const enThemeConfig = {
 
     outline: {
         level: "deep", // 右侧大纲标题层级
-    }
+    },
+
+    externalLinkIcon: true,
 }
 
 export default enThemeConfig
