@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://blog.xiaoshu312.top/sitemap.xml
