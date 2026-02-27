@@ -18,3 +18,6 @@ hero:
       link: https://github.com/xiaoshu312
 ---
 
+<CardWidget title='[Windows] Display System Buttons in a PyQt5 Frameless Window' subtitle='2026/2/27' href='./windows-pyqt5-frameless-window-show-system-buttons'>
+Learn some tips about the <i>system buttons</i>.
+</CardWidget>

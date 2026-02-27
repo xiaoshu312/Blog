@@ -17,6 +17,6 @@ hero:
       text: GitHub (Other)
       link: https://github.com/xiaoshu312
 ---
-<CardWidget title='[Windows] 在 PyQt5 的无边框窗口中显示系统按钮' subtitle='2026/2/26' href='./windows-pyqt5-frameless-window-show-system-buttons'>
-Walking In Progress...
+<CardWidget title='[Windows] 在 PyQt5 的无边框窗口中显示系统按钮' subtitle='2026/2/27' href='./windows-pyqt5-frameless-window-show-system-buttons'>
+了解关于系统按钮的技巧。
 </CardWidget>
