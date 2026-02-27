@@ -21,7 +21,7 @@ class Window(QWidget):
         self.thick = win32_utils.getResizeBorderThickness(int(self.winId()), False)
 
         self.DwmDefWindowProc = self.windowEffect.dwmapi.DwmDefWindowProc # [!code ++]
-        self.DwmDefWindowProc.argtypes = [ctypes.c_uint,
+        self.DwmDefWindowProc.argtypes = [ctypes.c_uint, # [!code ++]
             ctypes.c_uint, ctypes.c_uint, ctypes.c_uint, POINTER(ctypes.c_ulong)] # [!code ++]
         self.DwmDefWindowProc.restype = ctypes.c_bool # [!code ++]
         

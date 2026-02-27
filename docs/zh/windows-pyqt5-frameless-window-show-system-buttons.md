@@ -12,7 +12,7 @@
 
 > [!TIP]
 >
-> 本文中使用的 Python 版本为 3.11.9 ， PyQt5 版本为 5.15.9 ，并在 Windows 7 (6.1), 10 (10.0.19045), 11 (10.0.22621 以上) 对代码进行了测试
+> 本文中使用的 Python 版本为 3.11.9 或 3.8.10( 在 Win7 上 ) ， PyQt5 版本为 5.15.9 ，并在 Windows 7 (6.1), 10 (10.0.19045), 11 (10.0.22621 以上) 对代码进行了测试
 >
 > 理论上任何能使用 PyQt5、PyWin32、ctypes 的 Windows Vista 及以上的 Windows 都可以使用
 
@@ -72,5 +72,50 @@
 
 ![一个有标题栏的窗口，标题栏上没有图标和标题，但是有系统按钮，下面的内容区域是一片黑色，窗口边框是白色的](/windows-pyqt5-frameless-window-show-system-buttons/code-3.png)
 
+来看 `__init__` 。增加了 `titleBar` ，这是 `PyQt5-Frameless-Window` 中的标准标题栏，有窗口图标、标题，以及三个按钮。在此例中，我们有系统按钮，所以不需要标题栏提供的按钮，将其隐藏。
+
+`__init__` 中还有一个 [`DwmDefWindowProc`](https://learn.microsoft.com/windows/win32/api/dwmapi/nf-dwmapi-dwmdefwindowproc) ，这是一个很重要的 Windows API 函数，由 dwmapi.dll 导出，我们在此声明它的参数和返回值类型，至于它的用途，待会再说。
+
+接下来是一个 `setStyleSheet` 的调用，清除主题自带的背景；由于 DWM 的特性，系统按钮在窗口控件 Z 序的最下层（背景以下），所以控件或背景会遮住系统按钮。
+
+然后是调整大小，因为添加了控件，如果不调整大小会导致窗口变得很小（ `StandardTitleBar` 的初始大小）。
+
+在 `updateFrame` 方法中， [`DwmExtendFrameIntoClientArea`](https://learn.microsoft.com/windows/win32/api/dwmapi/nf-dwmapi-dwmextendframeintoclientarea) 的调用使窗口的上部分延伸下来一个标准标题栏的高度（注意，这里不是硬编码的 32px ，而是从 [`GetSystemMetrics`](https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-getsystemmetrics) 函数获取的标题栏的高度再加上调整大小边框的长度）。在这个延伸下来的部分里，系统会提供系统按钮。因此，这也是最重要的部分。
+
+接着， `resizeEvent` 的处理中的代码只是让标题栏控件能够调整到与窗口宽度相当的大小。
+
+然后就进入了**最重要**的 `nativeEvent` ！这里调用了 [`DwmDefWindowProc`](https://learn.microsoft.com/windows/win32/api/dwmapi/nf-dwmapi-dwmdefwindowproc) 函数，它的作用就是响应在系统按钮上的操作，比如进入（鼠标指针悬浮在按钮上）、点击、离开等等。如果没有这一段，系统按钮就只是个摆设，啥也干不了。
+
 这里有一些细节需要说明：
 
+1. 如你所见，类似于 Windows Explorer ，窗口边框成为了白色。这个问题仅会在 Windows 10 中出现，其他版本都不会有：
+
+    - 当传入 [`DwmExtendFrameIntoClientArea`](https://learn.microsoft.com/windows/win32/api/dwmapi/nf-dwmapi-dwmextendframeintoclientarea) 的 [`MARGINS`](https://learn.microsoft.com/windows/win32/api/uxtheme/ns-uxtheme-margins) 中的值有正数时，窗口边框是白色的；
+    - 当传入 [`DwmExtendFrameIntoClientArea`](https://learn.microsoft.com/windows/win32/api/dwmapi/nf-dwmapi-dwmextendframeintoclientarea) 的 [`MARGINS`](https://learn.microsoft.com/windows/win32/api/uxtheme/ns-uxtheme-margins) 中的值有负数时，窗口边框……根本不显示！
+    - 当传入 [`DwmExtendFrameIntoClientArea`](https://learn.microsoft.com/windows/win32/api/dwmapi/nf-dwmapi-dwmextendframeintoclientarea) 的 [`MARGINS`](https://learn.microsoft.com/windows/win32/api/uxtheme/ns-uxtheme-margins) 中的值都是 0 （也就是默认情况下），窗口边框就是正常的深灰色（可能与主题模式有关）。
+
+2. 最大化的时候，窗口“标题栏”的部分会有 `resizeBorderThickness` 的大小被挤出屏幕外。这可能是为了最大化的时候不让用户调整窗口大小，但是……这操作也太奇葩了吧！就不能直接禁用，非得把能调整大小的区域移到屏幕外？但是微软定下的_规矩_，我们也改不了。为了防止标题栏上的控件不垂直居中，你可以调整标题栏的高度、移动整个窗口的控件、调整布局的 `contentsMargins` （如果有）。
+
+    > 实际上，还有一种简单的方法。你可以在处理 `WM_NCCALCSIZE` 的窗口过程中判断当前窗口最大化时调整窗口上端的边距（最大化时四边的边距都可以调整且不会出现奇怪的行为），将其加上一个 `resizeBorderThickness` ，这样可以在不修改窗口属性的同时达到效果。可惜的是，这招对含有系统按钮的窗口并不友好，因为在最大化时调整上端边距会导致系统按钮再次停止响应（不知道是不是 bug ），所以只能尝试其它方法。
+
+通过以上的内容，你就拥有了一个包含系统按钮的窗口，这个窗口上的按钮可以跟随主题设置的按钮样式自动切换，快去使用吧！
+
+## 备注
+
+1. 通过以上方式实现的系统按钮窗口并不完美，因为其并不支持通过点击窗口图标或右键点击标题栏的方式打开[系统菜单](https://learn.microsoft.com/windows/win32/menurc/about-menus#the-window-menu) 。我在 [此处](https://gist.github.com/xiaoshu312/291999ae2c726b966ca2d2bc4b9a810d) 实现了一个包含系统菜单的版本，但是还是有些问题。感兴趣可以来看看！
+
+2. 对于最大化的问题，Chromium 有一个很好的解决方法，但我还没去研究。
+
+    > [!TIP]
+    >
+    > 你知道吗？在 Windows 11 上，启动 Chromium 时带有 `--enable-features=Windows11MicaTitlebar` 参数可以启动带有系统按钮的 Chromium ！
+    >
+    > [![带有系统按钮的 Microsoft Edge](/windows-pyqt5-frameless-window-show-system-buttons/microsoft-edge-mica-windows-11-hero.webp)](https://pureinfotech.com/microsoft-edge-mica-material-windows-11/)
+    >
+    > 注意：图片中的 Microsoft Edge 也是基于 Chromium 内核的。（我好像不用说）
+
+## 参考资料
+
+1. [Custom Window Frame Using DWM - Microsoft Learn](https://learn.microsoft.com/windows/win32/dwm/customframe)
+2. [c++ - Why is my DwmExtendFrameIntoClientArea()'d window not drawing the DWM borders? - Stack Overflow](https://stackoverflow.com/questions/41106347/why-is-my-dwmextendframeintoclientaread-window-not-drawing-the-dwm-borders)
+3. [zhiyiYo/PyQt-Frameless-Window: A cross-platform frameless window based on PyQt/PySide, support Win32, Linux and macOS.](https://github.com/zhiyiYo/PyQt-Frameless-Window)
