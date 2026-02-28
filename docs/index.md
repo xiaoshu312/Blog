@@ -5,7 +5,7 @@ layout: home
 hero:
   name: "Xiaoshu312's Home"
   text: "A Normal Blog"
-  tagline: Want to be an interesting person.
+  tagline: A middle school student who loves programming and Minecraft.
   image:
     src: /my_icon.jpg
     alt: My Icon
@@ -19,5 +19,5 @@ hero:
 ---
 
 <CardWidget title='[Windows] Display System Buttons in a PyQt5 Frameless Window' subtitle='2026/2/27' href='./windows-pyqt5-frameless-window-show-system-buttons'>
-Learn some tips about the <i>system buttons</i>.
+Learn about techniques for displaying system buttons on frameless window when combining Python and the Windows API.
 </CardWidget>
