@@ -5,6 +5,7 @@
       <div style="margin-top: 24px">
         <Giscus
           :key="page.filePath"
+          :theme="isDark ? 'dark' : 'light'"
           repo="xiaoshu312/Blog"
           repo-id="R_kgDORYiXEw"
           category="Announcements"
@@ -14,7 +15,6 @@
           reactions-enabled="1"
           emit-metadata="0"
           input-position="top"
-          theme="preferred_color_scheme"
           lang="zh-CN"
           crossorigin="anonymous"
         />
@@ -28,7 +28,7 @@ import Giscus from "@giscus/vue";
 import DefaultTheme from "vitepress/theme";
 import { useData } from "vitepress";
 
-const { page } = useData();
+const { page, isDark } = useData();
 
 const { Layout } = DefaultTheme;
 </script>
