@@ -114,14 +114,25 @@
     >
     > 注意：图片中的 Microsoft Edge 也是基于 Chromium 内核的。（我好像不用说）
 
-3. 在 Windows 11 上，上面的窗口可能没有云母（Mica）效果。要开启它，只需要在 `__init__` 的最后加上：
+3. 在 Windows 11 上，上面的窗口可能没有云母（Mica）效果。要开启它，只需要在 `__init__` 的 `updateFrame` 调用前加上：
 
     ```python
-    if win32_utils.isGreaterEqualWin11():
-        self.windowEffect.setMicaEffect(self.winId())
+        if win32_utils.isGreaterEqualWin11():
+            self.windowEffect.setMicaEffect(self.winId())
+            # or use self.windowEffect.setMicaEffect(self.winId(), False, True) to enable MicaAlt effect
     ```
-
+    
     就可以在标题栏上看到 Mica 效果了。有关 `WindowEffect` 的更多信息，参见 [window_effect.py](https://github.com/zhiyiYo/PyQt-Frameless-Window/blob/master/qframelesswindow/windows/window_effect.py)。
+    
+    ::: details Mica (Alt) 效果
+    
+    ![启用了 Mica 效果的窗口](/windows-pyqt5-frameless-window-show-system-buttons/win11-mica-window.png)
+    
+    ![启用了 Mica Alt 效果的窗口](/windows-pyqt5-frameless-window-show-system-buttons/win11-mica-alt-window.png)
+    
+    ![启用了 Mica 效果的窗口，标题栏上有一个按钮](/windows-pyqt5-frameless-window-show-system-buttons/win11-custom-button.png)
+    
+    :::
 
 ## 参考资料 {#References}
 
