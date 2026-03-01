@@ -1,6 +1,6 @@
 # [Windows] 在 PyQt5 的无边框窗口中显示系统按钮
 
-## 引子
+## 引子 {#Introduction}
 
 在使用 Windows 上的很多软件的时候，我们会发现有些软件的窗口比较奇怪，就像这些：
 
@@ -18,7 +18,7 @@
 
 <p align="center">--- 正片开始 ---</p>
 
-## 1. 先得有个无边框窗口
+## 1. 先得有个无边框窗口 {#First}
 
 先看代码：
 
@@ -32,7 +32,7 @@
 
 与普通的 `Qt.FramelessWindowHint` 不同的点在于，它有系统菜单（不信你按下 `Alt` + `Space` 试试），能最大化、最小化。
 
-## 2. 加上窗口阴影
+## 2. 加上窗口阴影 {#Second}
 
 还是先看代码：
 
@@ -62,7 +62,7 @@
 
 现在有了阴影，能调大小，就该回归正题了：
 
-## 3. 自定义标题栏 + 系统按钮
+## 3. 自定义标题栏 + 系统按钮 {#Third}
 
 老规矩，先看代码：
 
@@ -90,7 +90,7 @@
 
 1. 如你所见，类似于 Windows Explorer ，窗口边框成为了白色。这个问题仅会在 Windows 10 中出现，其他版本都不会有：
 
-    - 当传入 [`DwmExtendFrameIntoClientArea`](https://learn.microsoft.com/windows/win32/api/dwmapi/nf-dwmapi-dwmextendframeintoclientarea) 的 [`MARGINS`](https://learn.microsoft.com/windows/win32/api/uxtheme/ns-uxtheme-margins) 中的值有正数时，窗口边框是白色的；
+    - 当传入 [`DwmExtendFrameIntoClientArea`](https://learn.microsoft.com/windows/win32/api/dwmapi/nf-dwmapi-dwmextendframeintoclientarea) 的 [`MARGINS`](https://learn.microsoft.com/windows/win32/api/uxtheme/ns-uxtheme-margins) 中的值都是自然数时，窗口边框是白色的；
     - 当传入 [`DwmExtendFrameIntoClientArea`](https://learn.microsoft.com/windows/win32/api/dwmapi/nf-dwmapi-dwmextendframeintoclientarea) 的 [`MARGINS`](https://learn.microsoft.com/windows/win32/api/uxtheme/ns-uxtheme-margins) 中的值有负数时，窗口边框……根本不显示！
     - 当传入 [`DwmExtendFrameIntoClientArea`](https://learn.microsoft.com/windows/win32/api/dwmapi/nf-dwmapi-dwmextendframeintoclientarea) 的 [`MARGINS`](https://learn.microsoft.com/windows/win32/api/uxtheme/ns-uxtheme-margins) 中的值都是 0 （也就是默认情况下），窗口边框就是正常的深灰色（可能与主题模式有关）。
 
@@ -100,11 +100,11 @@
 
 通过以上的内容，你就拥有了一个包含系统按钮的窗口，这个窗口上的按钮可以跟随主题设置的按钮样式自动切换，快去使用吧！
 
-## 备注
+## 备注 {#Remarks}
 
 1. 通过以上方式实现的系统按钮窗口并不完美，因为其并不支持通过点击窗口图标或右键点击标题栏的方式打开[系统菜单](https://learn.microsoft.com/windows/win32/menurc/about-menus#the-window-menu) 。我在 [此处](https://gist.github.com/xiaoshu312/291999ae2c726b966ca2d2bc4b9a810d) 实现了一个包含系统菜单的版本，但是还是有些问题。感兴趣可以来看看！
 
-2. 对于最大化的问题，Chromium 有一个很好的解决方法，但我还没去研究。
+2. 对于最大化的问题，Chromium 似乎有一个很好的解决方法，但我还没去研究。
 
     > [!TIP]
     >
@@ -114,7 +114,16 @@
     >
     > 注意：图片中的 Microsoft Edge 也是基于 Chromium 内核的。（我好像不用说）
 
-## 参考资料
+3. 在 Windows 11 上，上面的窗口可能没有云母（Mica）效果。要开启它，只需要在 `__init__` 的最后加上：
+
+    ```python
+    if win32_utils.isGreaterEqualWin11():
+        self.windowEffect.setMicaEffect(self.winId())
+    ```
+
+    就可以在标题栏上看到 Mica 效果了。有关 `WindowEffect` 的更多信息，参见 [window_effect.py](https://github.com/zhiyiYo/PyQt-Frameless-Window/blob/master/qframelesswindow/windows/window_effect.py)。
+
+## 参考资料 {#References}
 
 1. [Custom Window Frame Using DWM - Microsoft Learn](https://learn.microsoft.com/windows/win32/dwm/customframe)
 2. [c++ - Why is my DwmExtendFrameIntoClientArea()'d window not drawing the DWM borders? - Stack Overflow](https://stackoverflow.com/questions/41106347/why-is-my-dwmextendframeintoclientaread-window-not-drawing-the-dwm-borders)

@@ -1,120 +1,129 @@
-# [Windows] Display System Buttons in a PyQt5 Frameless Window
+# [Windows] Displaying System Buttons in a PyQt5 Frameless Window
 
-## Introduction
+## Introduction {#Introduction}
 
 When using many software applications on Windows, we sometimes notice that some windows look a bit unusual, like these:
 
-![Microsoft Word 2007 custom frame](/windows-pyqt5-frameless-window-show-system-buttons/word2007-customframe.png)
+![Microsoft Word 2007 with custom frame](/windows-pyqt5-frameless-window-show-system-buttons/word2007-customframe.png)
 
-![Windows 10 Explorer custom frame](/windows-pyqt5-frameless-window-show-system-buttons/explorer10-customframe.png)
+![Windows 10 Explorer with custom frame](/windows-pyqt5-frameless-window-show-system-buttons/explorer10-customframe.png)
 
-As we know, (normally) the content on the window border is managed by the operating system and is inaccessible to applications. However, these windows can place their own controls on the title bar while retaining the system-provided (native) title bar buttons. How is this achieved?
+As we all know, under normal circumstances, the content on the window borders is managed by the operating system, and applications cannot interfere with it. However, these windows manage to place their own controls on the title bar while retaining the system's (native) title bar buttons. How is this achieved?
 
 > [!TIP]
 >
-> The Python version used in this article is 3.11.9 or 3.8.10 (on Win7), PyQt5 version is 5.15.9, and the code has been tested on Windows 7 (6.1), 10 (10.0.19045), and 11 (10.0.22621 and above).
+> The Python version used in this article is 3.11.9 or 3.8.10 (on Win7), PyQt5 version is 5.15.9, and the code has been tested on Windows 7 (6.1), Windows 10 (10.0.19045), and Windows 11 (10.0.22621 and above).
 >
-> In theory, any Windows Vista and above that can use PyQt5, PyWin32, and ctypes should work.
+> In theory, any Windows Vista or later system capable of running PyQt5, PyWin32, and ctypes can use this method.
 
 <p align="center">--- The main content begins ---</p>
 
-## 1. First, create a frameless window
+## 1. First, we need a frameless window {#First}
 
 Let's look at the code:
 
 <<< @/public/windows-pyqt5-frameless-window-show-system-buttons/code-1.py{16,17}
 
-This "frameless" approach might differ from what you commonly use. It doesn't modify `windowFlags`. Instead, it removes the standard window frame by handling the `WM_NCCALCSIZE` native event, making the window "frameless" while retaining its original `windowFlags`.
+This "frameless" window might be slightly different from the code you usually use. It does not modify `windowFlags`. Instead, it removes the standard window frame by handling the `WM_NCCALCSIZE` message in `nativeEvent`, turning the window into a "frameless window" while retaining its original `windowFlags`.
 
-The result is as follows:
+The effect is as follows:
 
-![A blank frameless window, no border, no title bar, no shadow](/windows-pyqt5-frameless-window-show-system-buttons/code-1.png)
+![An empty frameless window, no border, no title bar, no shadow](/windows-pyqt5-frameless-window-show-system-buttons/code-1.png)
 
-The difference from a regular `Qt.FramelessWindowHint` is that this window still has a system menu (try pressing `Alt` + `Space`), and it can be maximized and minimized.
+The difference from using the ordinary `Qt.FramelessWindowHint` is that this window still has a system menu (try pressing `Alt`+`Space`), and it can be maximized and minimized.
 
-## 2. Add window shadows
+## 2. Adding window shadows {#Second}
 
-Again, look at the code:
+Again, let's start with the code:
 
 <<< @/public/windows-pyqt5-frameless-window-show-system-buttons/code-2.py
 
 > [!IMPORTANT]
 >
-> This code uses a library called [`PyQt5-Frameless-Window`](https://github.com/zhiyiYo/PyQt-Frameless-Window), which encapsulates a cross-platform frameless window. In this article, I only use the C structures, some utility functions, and other bits from the implementation details of this library, not the window part of it.
+> This code uses a window library called [`PyQt5-Frameless-Window`](https://github.com/zhiyiYo/PyQt-Frameless-Window). This library encapsulates a cross-platform frameless window. In this article, I only use the C structures, some utility functions, and other bits from this library's implementation details, not the library's window part itself.
 
-Let's examine `nativeEvent`. In the `WM_NCCALCSIZE` handling section, I added some calculations (L29~38). These calculations modify the margins of the window's non-client area (NCA), allowing the resizing border to behave identically to the standard window frame's resizing behavior (essentially, the left, bottom, and right borders are handed over to the standard window frame, which provides shadows and the same resizing behavior as a "window with borders").
+Let's first look at `nativeEvent`. In the part handling `WM_NCCALCSIZE` (lines 29~38), I added some calculations. These calculations can modify the margins of the window's non-client area (NCA), making the resizing borders behave identically to the borders of a standard framed window (essentially, the left, bottom, and right borders are handed over to the standard window frame, thus providing shadows and the same resizing behavior as a "window with borders").
 
-Now, observant readers might ask:
+At this point, observant readers might wonder:
 
 > Why not adjust the top border margin as well?
 
-Well, indeed, you cannot adjust **all** four borders, otherwise, you'll get strange results. Feel free to try it yourself, haha.
+Well, you cannot adjust **all** four borders; otherwise, strange things happen. You can try it yourself, haha.
 
-Next is `WM_NCHITTEST`: this compensates for not adjusting the top border — with this, the top border can also be used for resizing.
+Next is `WM_NCHITTEST`: This compensates for not adjusting the top border — with this handling, the top border can also be used for resizing.
 
-Now, look at `WM_DPICHANGED` below (the constant I used isn't in `win32con`). This handling is mainly to adapt the `resizeBorderThickness` to the new DPI when the DPI changes, adjusting the window margins to the new size.
+Now, let's look at `WM_DPICHANGED` below (the constant for this is not available in the `win32con` I'm using). This handling is primarily to match the new DPI's `resizeBorderThickness` when the DPI changes, adjusting the window margins to the new size.
 
-Now, look at `updateFrame`. This is important: without this, the window might not become frameless until you manually resize it after it appears. The purpose of this function is to automatically refresh the frame.
+Now, look at `updateFrame`. This is important: without this, the window might not become a frameless window until you manually resize it after it appears. The purpose of this function is to automatically refresh the frame.
 
 Alright, let's see the effect:
 
-![A blank frameless window, with shadow added, resizable on all four sides compared to the previous one](/windows-pyqt5-frameless-window-show-system-buttons/code-2.png)
+![An empty frameless window, now with shadows, and resizable on all four sides](/windows-pyqt5-frameless-window-show-system-buttons/code-2.png)
 
-Now that we have shadows and resizing capabilities, it's time to get back to the main topic:
+Now that we have shadows and can resize, it's time to get back to the main topic:
 
-## 3. Custom title bar + system buttons
+## 3. Custom Title Bar + System Buttons {#Third}
 
-As usual, look at the code first:
+As usual, let's see the code first:
 
 <<< @/public/windows-pyqt5-frameless-window-show-system-buttons/code-3.py
 
-Now look at the effect:
+And the effect:
 
-![A window with a title bar, no icon or title on the title bar, but with system buttons; the content area below is black, and the window border is white](/windows-pyqt5-frameless-window-show-system-buttons/code-3.png)
+![A window with a title bar, but no icon or title on the title bar, yet it has system buttons. The content area below is black, and the window border is white.](/windows-pyqt5-frameless-window-show-system-buttons/code-3.png)
 
-Let's examine `__init__`. Added `titleBar`, which is the standard title bar from `PyQt5-Frameless-Window`, featuring a window icon, title, and three buttons. In this example, we have system buttons, so we hide the buttons provided by the title bar.
+Look at `__init__`. It adds `titleBar`, which is the standard title bar from `PyQt5-Frameless-Window`, containing a window icon, title, and three buttons. In this example, we have system buttons, so we don't need the buttons provided by the title bar; we hide them.
 
-`__init__` also contains a [`DwmDefWindowProc`](https://learn.microsoft.com/windows/win32/api/dwmapi/nf-dwmapi-dwmdefwindowproc) declaration. This is an important Windows API function exported by dwmapi.dll. We declare its parameter and return types here; its purpose will be explained later.
+In `__init__`, there's also [`DwmDefWindowProc`](https://learn.microsoft.com/windows/win32/api/dwmapi/nf-dwmapi-dwmdefwindowproc), a crucial Windows API function exported by dwmapi.dll. We declare its parameter and return types here; we'll discuss its purpose shortly.
 
-Next is a call to `setStyleSheet` to clear the theme's default background; due to DWM characteristics, system buttons are at the lowest Z-order of window controls (below the background). Therefore, controls or backgrounds can obscure the system buttons.
+Next is a call to `setStyleSheet` to clear the theme's default background. Due to DWM's characteristics, system buttons are at the bottom of the window's Z-order for controls (below the background), so controls or backgrounds would obscure the system buttons.
 
-Then, resizing is done because adding controls can make the window very small (the initial size of `StandardTitleBar`).
+Then we resize the window because adding controls would otherwise make the window very small (due to the initial size of `StandardTitleBar`).
 
-In the `updateFrame` method, the call to [`DwmExtendFrameIntoClientArea`](https://learn.microsoft.com/windows/win32/api/dwmapi/nf-dwmapi-dwmextendframeintoclientarea) extends the upper part of the window down by the height of a standard title bar (note: this is not hardcoded to 32px, but obtained from the [`GetSystemMetrics`](https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-getsystemmetrics) function for the title bar height plus the resizing border thickness). In this extended area, the system provides the system buttons. Therefore, this is the most crucial part.
+In the `updateFrame` method, the call to [`DwmExtendFrameIntoClientArea`](https://learn.microsoft.com/windows/win32/api/dwmapi/nf-dwmapi-dwmextendframeintoclientarea) extends the standard title bar area down into the client area by a standard title bar height (note: this is not hardcoded as 32px; it's obtained from the [`GetSystemMetrics`](https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-getsystemmetrics) function for the title bar height plus the resizing border thickness). Within this extended area, the system provides the system buttons. Hence, this is the most crucial part.
 
-Next, the code in `resizeEvent` simply adjusts the title bar control to match the window's width.
+Then, the code in the `resizeEvent` handler simply adjusts the title bar widget to match the window's width.
 
-Then we reach the **most important** part: `nativeEvent`! Here, the [`DwmDefWindowProc`](https://learn.microsoft.com/windows/win32/api/dwmapi/nf-dwmapi-dwmdefwindowproc) function is called. Its purpose is to handle interactions with the system buttons, such as hover (mouse pointer over a button), click, leave, etc. Without this section, the system buttons would be mere decorations, incapable of any action.
+Now we enter the **most important** part: `nativeEvent`! Here, we call the [`DwmDefWindowProc`](https://learn.microsoft.com/windows/win32/api/dwmapi/nf-dwmapi-dwmdefwindowproc) function. Its role is to respond to interactions with the system buttons, such as hover, click, leave, etc. Without this, the system buttons would be mere decorations that do nothing.
 
 Some details need clarification:
 
-1. As you can see, similar to Windows Explorer, the window border becomes white. This issue only occurs on Windows 10; other versions do not exhibit this:
-    - When the [`MARGINS`](https://learn.microsoft.com/windows/win32/api/uxtheme/ns-uxtheme-margins) passed to [`DwmExtendFrameIntoClientArea`](https://learn.microsoft.com/windows/win32/api/dwmapi/nf-dwmapi-dwmextendframeintoclientarea) contain positive values, the window border is white.
-    - When the [`MARGINS`](https://learn.microsoft.com/windows/win32/api/uxtheme/ns-uxtheme-margins) passed to [`DwmExtendFrameIntoClientArea`](https://learn.microsoft.com/windows/win32/api/dwmapi/nf-dwmapi-dwmextendframeintoclientarea) contain negative values, the window border... doesn't appear at all!
-    - When all values in the [`MARGINS`](https://learn.microsoft.com/windows/win32/api/uxtheme/ns-uxtheme-margins) passed to [`DwmExtendFrameIntoClientArea`](https://learn.microsoft.com/windows/win32/api/dwmapi/nf-dwmapi-dwmextendframeintoclientarea) are 0 (the default), the window border is the normal dark gray (may vary with theme mode).
+1.  As you may have noticed, similar to Windows Explorer, the window border becomes white. This issue only occurs on Windows 10; other versions do not exhibit this:
+    - When the values in the [`MARGINS`](https://learn.microsoft.com/windows/win32/api/uxtheme/ns-uxtheme-margins) structure passed to [`DwmExtendFrameIntoClientArea`](https://learn.microsoft.com/windows/win32/api/dwmapi/nf-dwmapi-dwmextendframeintoclientarea) are all natural numbers, the window border is white.
+    - When the values in the [`MARGINS`](https://learn.microsoft.com/windows/win32/api/uxtheme/ns-uxtheme-margins) structure passed to [`DwmExtendFrameIntoClientArea`](https://learn.microsoft.com/windows/win32/api/dwmapi/nf-dwmapi-dwmextendframeintoclientarea) include negative numbers, the window border… doesn't show at all!
+    - When the values in the [`MARGINS`](https://learn.microsoft.com/windows/win32/api/uxtheme/ns-uxtheme-margins) structure passed to [`DwmExtendFrameIntoClientArea`](https://learn.microsoft.com/windows/win32/api/dwmapi/nf-dwmapi-dwmextendframeintoclientarea) are all 0 (i.e., the default), the window border is the normal dark gray (might vary with theme mode).
 
-2. When maximized, part of the window's "title bar" area, equal to `resizeBorderThickness`, is pushed off-screen. This is likely to prevent users from resizing the window when maximized, but... this behavior is quite peculiar! Why not simply disable it, rather than moving the resizable area off-screen? However, this is a Microsoft-imposed *rule* we cannot change. To prevent controls on the title bar from not being vertically centered, you can adjust the title bar's height, reposition the window's controls, or adjust the layout's `contentsMargins` (if any).
+2.  When maximized, the window's "title bar" area will have a portion equal to `resizeBorderThickness` pushed off the screen. This is likely to prevent the user from resizing the window when maximized, but… this operation is quite odd! Why not just disable resizing directly, why move the resizable area off-screen? But since Microsoft has set this _rule_, we can't change it. To prevent the controls on the title bar from not being vertically centered, you can adjust the title bar's height, move all window controls, or adjust the layout's `contentsMargins` (if available).
 
-    > Actually, there is a simpler method. You can check if the window is maximized when handling `WM_NCCALCSIZE` and adjust the top margin (all four margins can be adjusted when maximized without causing strange behavior) by adding `resizeBorderThickness`. This achieves the effect without modifying window properties. Unfortunately, this approach is not friendly to windows with system buttons, as adjusting the top margin when maximized causes the system buttons to stop responding again (whether it's a bug or not is unknown), so other methods must be attempted.
+    > Actually, there is another simple method. You could check if the window is maximized when handling `WM_NCCALCSIZE` and then adjust the top margin accordingly (when maximized, adjusting all four margins is possible without causing strange behavior), adding a `resizeBorderThickness` to it. This achieves the effect without modifying window properties. Unfortunately, this approach is not friendly to windows containing system buttons, because adjusting the top margin when maximized causes the system buttons to stop responding again (possibly a bug), so other methods must be tried.
 
-Through the above content, you now have a window containing system buttons. These buttons automatically switch their styles according to the theme settings. Go ahead and use it!
+With the above, you now have a window that includes system buttons, and these buttons automatically switch styles according to the theme settings. Go ahead and use it!
 
-## Notes
+## Remarks {#Remarks}
 
-1. The system button window implemented via this method is not perfect because it does not support opening the [system menu](https://learn.microsoft.com/windows/win32/menurc/about-menus#the-window-menu) by clicking the window icon or right-clicking the title bar. I have implemented a version that includes the system menu [here](https://gist.github.com/xiaoshu312/291999ae2c726b966ca2d2bc4b9a810d), but it still has some issues. Feel free to take a look if interested!
+1.  The window with system buttons implemented via the above method is not perfect because it does not support opening the [system menu](https://learn.microsoft.com/windows/win32/menurc/about-menus#the-window-menu) by clicking the window icon or right-clicking the title bar. I have implemented a version that includes the system menu [here](https://gist.github.com/xiaoshu312/291999ae2c726b966ca2d2bc4b9a810d), but it still has some issues. Feel free to take a look!
 
-2. Regarding the maximization issue, Chromium has a good solution, but I haven't investigated it yet.
+2.  Regarding the maximization issue, Chromium seems to have a good workaround, but I haven't investigated it yet.
 
     > [!TIP]
     >
-    > Did you know? On Windows 11, launching Chromium with the `--enable-features=Windows11MicaTitlebar` parameter starts Chromium with system buttons!
+    > Did you know? On Windows 11, starting Chromium with the `--enable-features=Windows11MicaTitlebar` parameter can launch Chromium with system buttons!
     >
     > [![Microsoft Edge with system buttons](/windows-pyqt5-frameless-window-show-system-buttons/microsoft-edge-mica-windows-11-hero.webp)](https://pureinfotech.com/microsoft-edge-mica-material-windows-11/)
     >
-    > Note: The Microsoft Edge in the image is also based on the Chromium kernel. (I probably didn't need to mention that)
+    > Note: Microsoft Edge in the image is also based on the Chromium kernel. (I probably don't need to say this)
 
-## References
+3.  On Windows 11, the window above may not have the Mica effect. To enable it, simply add the following at the end of `__init__`:
 
-1. [Custom Window Frame Using DWM - Microsoft Learn](https://learn.microsoft.com/windows/win32/dwm/customframe)
-2. [c++ - Why is my DwmExtendFrameIntoClientArea()'d window not drawing the DWM borders? - Stack Overflow](https://stackoverflow.com/questions/41106347/why-is-my-dwmextendframeintoclientaread-window-not-drawing-the-dwm-borders)
-3. [zhiyiYo/PyQt-Frameless-Window: A cross-platform frameless window based on PyQt/PySide, support Win32, Linux and macOS.](https://github.com/zhiyiYo/PyQt-Frameless-Window)
+    ```python
+    if win32_utils.isGreaterEqualWin11():
+        self.windowEffect.setMicaEffect(self.winId())
+    ```
+
+    Then you can see the Mica effect on the title bar. For more information about `WindowEffect`, see [window_effect.py](https://github.com/zhiyiYo/PyQt-Frameless-Window/blob/master/qframelesswindow/windows/window_effect.py).
+
+## References {#References}
+
+1.  [Custom Window Frame Using DWM - Microsoft Learn](https://learn.microsoft.com/windows/win32/dwm/customframe)
+2.  [c++ - Why is my DwmExtendFrameIntoClientArea()'d window not drawing the DWM borders? - Stack Overflow](https://stackoverflow.com/questions/41106347/why-is-my-dwmextendframeintoclientaread-window-not-drawing-the-dwm-borders)
+3.  [zhiyiYo/PyQt-Frameless-Window: A cross-platform frameless window based on PyQt/PySide, support Win32, Linux and macOS.](https://github.com/zhiyiYo/PyQt-Frameless-Window)
