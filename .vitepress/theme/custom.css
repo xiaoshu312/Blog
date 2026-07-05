@@ -1,22 +1,11 @@
 :root {
     --vp-home-hero-name-color: transparent;
-    --vp-home-hero-name-background: #0078D7; /* -webkit-linear-gradient(120deg, #00a4e1 30%, #6069ba); */
+    --vp-home-hero-name-background: linear-gradient(130deg, #3ad6fd, #cbe942);
+    --vp-home-hero-image-background-image: linear-gradient(130deg, #3ad6fd 50%, #f7f548 50%);
+    --vp-home-hero-image-filter: blur(40px);
 }
 
-@media (min-width: 960px) {
-    .image-src {
-        max-width: 500px !important;
-        max-height: 500px !important;
-    }
-}
-
-/* @media (min-width: 640px) {
-    .image-src {
-        max-width: 320px !important;
-        max-height: 320px !important;
-    }
-} */
-
-.profile .avatar {
-    box-shadow: none !important;
+img.VPImage.image-src {
+    width: 256px;
+    height: 256px;
 }

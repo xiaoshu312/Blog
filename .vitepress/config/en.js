@@ -1,6 +1,6 @@
 const enThemeConfig = {
     // https://vitepress.dev/reference/default-theme-config
-    logo: '/my_icon.jpg',
+    logo: '/icon_rounded.png',
 
     i18nRouting: true,
 
@@ -25,7 +25,7 @@ const enThemeConfig = {
 
     socialLinks: [
         { icon: 'github', link: 'https://github.com/xiaoshu312/Blog' },
-        { icon: 'afdian', link: 'https://afdian.com/a/xiaoshu312' },
+        // { icon: 'afdian', link: 'https://afdian.com/a/xiaoshu312' },
     ],
 
     footer: {
@@ -39,7 +39,7 @@ const enThemeConfig = {
     },
 
     outline: {
-        level: "deep", // 右侧大纲标题层级
+        level: 2, // 右侧大纲标题层级
     },
 
     externalLinkIcon: true,

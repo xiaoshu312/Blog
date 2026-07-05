@@ -1,4 +1,5 @@
 import { defineConfig } from 'vitepress'
+import footnote from 'markdown-it-footnote'
 import headConfig from './config/head'
 import enThemeConfig from './config/en'
 import zhThemeConfig from './config/zh'
@@ -21,7 +22,7 @@ export default defineConfig({
       link: '/zh/',
       themeConfig: zhThemeConfig,
       title: "小树的小窝",
-      description: "一个普通的博客。",
+      description: "",
     },
   },
   themeConfig: enThemeConfig,
@@ -60,6 +61,7 @@ export default defineConfig({
           `<button title="${codeCopyButtonTitle}" class="copy"></button>`
         )
       }
+      md.use(footnote)
     },
   },
 })

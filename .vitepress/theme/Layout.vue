@@ -15,7 +15,7 @@
           reactions-enabled="1"
           emit-metadata="0"
           input-position="top"
-          lang="zh-CN"
+          lang="en"
           crossorigin="anonymous"
         />
       </div>

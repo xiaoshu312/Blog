@@ -1,6 +1,6 @@
 const zhThemeConfig = {
     // https://vitepress.dev/reference/default-theme-config
-    logo: '/my_icon.jpg',
+    logo: '/icon_rounded.png',
 
     i18nRouting: true,
 
@@ -52,7 +52,7 @@ const zhThemeConfig = {
 
     socialLinks: [
         { icon: 'github', link: 'https://github.com/xiaoshu312/Blog' },
-        { icon: 'afdian', link: 'https://afdian.com/a/xiaoshu312' },
+        // { icon: 'afdian', link: 'https://afdian.com/a/xiaoshu312' },
     ],
 
     footer: {
@@ -71,8 +71,15 @@ const zhThemeConfig = {
     },
 
     outline: {
-        level: "deep", // 右侧大纲标题层级
-        label: "目录", // 右侧大纲标题文本配置
+        level: 2, // 右侧大纲标题层级
+        label: "页面导航", // 右侧大纲标题文本配置
+    },
+    notFound: {
+      title: '页面未找到',
+      quote:
+        '但如果你不改变方向，并且继续寻找，你可能最终会到达你所前往的地方。',
+      linkLabel: '前往首页',
+      linkText: '带我回首页'
     },
 
     lastUpdatedText: '最后更新于',
@@ -82,6 +89,7 @@ const zhThemeConfig = {
     darkModeSwitchTitle: '切换到深色模式',
     sidebarMenuLabel: '菜单',
     langMenuLabel: '切换语言',
+    skipToContentLabel: '跳转到内容'
 }
 
 export default zhThemeConfig
